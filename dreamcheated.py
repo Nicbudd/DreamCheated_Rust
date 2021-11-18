@@ -1,12 +1,12 @@
 import random, time
 import datetime as dt
 
-
+batchSize = 100000
 
 file = open("dream.txt", "r")
 
-#rods,pearls,attempts,execTime,dateTimeFound
-#0,0,0,0,0,0
+#rods,pearls,attempts,execTime,dateTimeFound,speed
+#0,0,0,0,0,0,0
 
 data = ""
 for line in file:
@@ -24,17 +24,21 @@ file.close()
 
 startTime = time.time()
 
-def update(startTime, execTime):
+def update(startTime, execTime, batchTime):
     executionTime = (time.time() - startTime)
     execTime += executionTime
     startTime = time.time()
+    speed = batchSize/batchTime
 
-    data = [str(dreamMaxRods), str(dreamMaxPearls), str(maxAttempts), str(dateTimeFound), str(attempts), str(execTime)]
+    data = [str(dreamMaxRods), str(dreamMaxPearls), str(maxAttempts), str(dateTimeFound), str(attempts), str(execTime), str(speed)]
     file = open("dream.txt", "w")
     file.write(",".join(data))
     file.close()
 
     print(data)
+
+
+batchExecutionStart = time.time()
 
 while True:
 
@@ -42,7 +46,7 @@ while True:
     pearls = 0
 
     for x in range(305):
-        if random.random() < 0.5:
+        if random.random() < (1/2):
             rods += 1
 
     if rods >= dreamMaxRods:
@@ -62,7 +66,10 @@ while True:
 
     attempts += 1
 
-    if attempts % 100000 == 0:
+    if attempts % batchSize == 0:
 
-        update(startTime, execTime)
+        batchTime = time.time() - batchExecutionStart
+        batchExecutionStart = time.time()
+
+        update(startTime, execTime, batchTime)
 
