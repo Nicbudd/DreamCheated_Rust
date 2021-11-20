@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <sys/random.h>
 
 void update(int maxRods, int maxPearls, unsigned long long maxAttempts, char whenFound[], unsigned long long attempts, double totalExecTime, double speed){
     // open file
@@ -19,15 +20,15 @@ void update(int maxRods, int maxPearls, unsigned long long maxAttempts, char whe
 
     printf("Attempts: %llu, Rods: %d, Pearls: %d, Speed: %lf attempts/sec\n", attempts, maxRods, maxPearls, speed);
 }
-    
+
 
 int main()
-{   
+{
     int maxRods;
     int maxPearls;
     unsigned long long maxAttempts;
     unsigned long long attempts;
-    char whenFound[26];
+    char whenFound[19];
     double totalExecTime;
     double speed;
 
@@ -39,8 +40,7 @@ int main()
     }
 
     // find relevant data
-    fscanf(fp, "%i,%i,%llu,%26[^\n],%llu,%lf,%lf", &maxRods, &maxPearls, &maxAttempts, whenFound, &attempts, &totalExecTime, &speed);
-
+    fscanf(fp, "%i,%i,%llu,%19[^\n],%llu,%lf,%lf", &maxRods, &maxPearls, &maxAttempts, whenFound, &attempts, &totalExecTime, &speed);
 
     // close file
     fclose(fp);
@@ -54,9 +54,9 @@ int main()
     printf("%lf\n", totalExecTime);
 
 
-    long seed = time(NULL);
-    srand((unsigned int)seed);
-    
+
+    long seed;
+
     const int PEARLTHRESHOLD = 20;
     const int PEARLRANGE = 423;
     const int GOLDTRADES = 262;
@@ -70,11 +70,22 @@ int main()
 
 
     const int LOGFREQ = 1000000;
-    
 
-    
+
+
     while (true) {
-        
+
+      seed = (long int)time(NULL);
+
+      long int randSeed;
+      getrandom(&seed, sizeof(seed), 0);
+
+      seed ^= randSeed;
+
+      printf("%ld\n", seed);
+      srand((unsigned int)seed);
+
+        // time length of batch of executions
         clock_t startT = clock();
 
         for (int i = 0; i < LOGFREQ; i++){
@@ -124,18 +135,20 @@ int main()
                 // if so, then update
                 if (newMax) {
                     time_t t = time(NULL);
-                    strftime(whenFound, sizeof(whenFound), "%F %T", localtime(&t));
+                    strftime(whenFound, sizeof(whenFound), "%F %T",
+                      localtime(&t));
                     maxRods = rodCount;
                     maxPearls = pearlCount;
-                    update(maxRods, maxPearls, maxAttempts, whenFound, attempts, totalExecTime, 0);
+                    update(maxRods, maxPearls, maxAttempts, whenFound, attempts,
+                      totalExecTime, 0);
 
                 }
             }
 
             attempts++;
-            
+
         }
-        
+
         double seconds = ((double)(clock() - startT) / (double)CLOCKS_PER_SEC);
 
         speed = LOGFREQ / seconds;
@@ -145,11 +158,9 @@ int main()
 
 
         //printf("%lf attempts per second \n", LOGFREQ / seconds);
-        
+
     }
-    
-    
+
+
     return 0;
 }
-
-
