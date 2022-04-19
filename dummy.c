@@ -5,45 +5,18 @@
 #include <sys/random.h>
 
 void update(int maxRods, int maxPearls, unsigned long long maxAttempts, char whenFound[], unsigned long long attempts, double totalExecTime, double speed){
-    // open file
-    FILE *fp;
-    if ((fp = fopen("dreamc.txt", "w")) == NULL){
-        printf("File not found");
-        exit(1);
-    }
-
-    // add data
-    fprintf(fp, "%i,%i,%llu,%s,%llu,%lf,%lf", maxRods, maxPearls, maxAttempts, whenFound, attempts, totalExecTime, speed);
-
-    // close file
-    fclose(fp);
-
     printf("Attempts: %llu, Rods: %d, Pearls: %d, Speed: %lf attempts/sec\n", attempts, maxRods, maxPearls, speed);
 }
 
 int main() {
 
-    int maxRods;
-    int maxPearls;
-    unsigned long long maxAttempts;
-    unsigned long long attempts;
-    char whenFound[19];
-    double totalExecTime;
-    double speed;
-
-    // open file
-    FILE *fp;
-    if ((fp = fopen("dreamc.txt", "r")) == NULL){
-        printf("File not found");
-        exit(1);
-    }
-
-    // find relevant data
-    fscanf(fp, "%i,%i,%llu,%19[^\n],%llu,%lf,%lf", &maxRods, &maxPearls, &maxAttempts, whenFound, &attempts, &totalExecTime, &speed);
-
-    // close file
-    fclose(fp);
-
+    int maxRods = 0;
+    int maxPearls = 0;
+    unsigned long long maxAttempts = 0;
+    unsigned long long attempts = 0;
+    char whenFound[19] = "";
+    double totalExecTime = 0;
+    double speed = 0;
 
     printf("%i\n", maxRods);
     printf("%i\n", maxPearls);
@@ -81,7 +54,7 @@ int main() {
 
       seed ^= randSeed;
 
-      // printf("%ld\n", seed);
+      printf("%ld\n", seed);
       srand((unsigned int)seed);
 
         // time length of batch of executions
