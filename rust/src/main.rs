@@ -1,5 +1,5 @@
-#![feature(portable_simd)]
-use std::simd::*;
+//#![feature(portable_simd)]
+//use std::simd::*;
 //use std::env;
 use std::fs;
 use std::fs::File;
@@ -80,9 +80,15 @@ fn main() {
             let mut rodCount: u16 = 0;
 
             // super duper efficient way
-            let list: [u64; 5] = [rng.gen(), rng.gen(), rng.gen(), rng.gen(), rng.gen::<u64>() & 0x1FFFF_FFFF_FFFFu64]; // 49 1s as a mask
+            let list: (u128, u128, u64) = (rng.gen(), rng.gen(), rng.gen::<u64>() & 0x1FFFF_FFFF_FFFFu64); // 49 1s as a mask
 
 
+            //new way
+            rodCount = (list.0.count_ones() + list.1.count_ones() + list.2.count_ones()) as u16;
+
+
+            // old way
+            /*
             //let mut counted: u16 = 0;
             // why generate 305 random numbers when you can generate just 5?
             for item in list {
@@ -92,7 +98,7 @@ fn main() {
                 }*/
                 //counted += 64;
             }
-
+            */
 
             // only do pearl section if rod section gets record (optimization)
             if rodCount >= maxRods {
