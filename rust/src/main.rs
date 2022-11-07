@@ -1,13 +1,13 @@
-//#![feature(portable_simd)]
-//use std::simd::*;
-use std::env;
+#![feature(portable_simd)]
+use std::simd::*;
+//use std::env;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::time::SystemTime;
 use rand::prelude::*;
 use rand_xoshiro::Xoshiro256PlusPlus;
-use chrono::{DateTime, Utc, format::strftime};
+use chrono::{DateTime, Utc};
 
 fn update(maxRods: u16, maxPearls: u16, maxAttempts: u64, whenFound: &str, attempts: u64,
     totalExecTime: f64, speed: f64) {
@@ -83,18 +83,23 @@ fn main() {
             let list: [u64; 5] = [rng.gen(), rng.gen(), rng.gen(), rng.gen(), rng.gen::<u64>() & 0x1FFFF_FFFF_FFFFu64]; // 49 1s as a mask
 
 
+            //let mut counted: u16 = 0;
             // why generate 305 random numbers when you can generate just 5?
             for item in list {
                 rodCount += item.count_ones() as u16; // fast bit count go brrrrrrr
+                /*if (rodCount + (305u16 - counted) < maxRods) { // if we can tell right away we aren't gonna get a max
+                    continue;
+                }*/
+                //counted += 64;
             }
 
 
             // only do pearl section if rod section gets record (optimization)
-            if (rodCount >= maxRods) {
+            if rodCount >= maxRods {
                 // PEARLS
                 let mut pearlCount: u16 = 0;
 
-                for _j in 0..GOLDTRADES {
+                for j in 0..GOLDTRADES {
                     pearlCount += rng.gen_bool(PEARLTHRESHOLD / PEARLRANGE) as u16;
                 }
 

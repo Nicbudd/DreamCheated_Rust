@@ -5,3 +5,8 @@ dreambackup.txt
 dreamcbackup.txt
 rust_SIMD/target
 .idea
+.main.c.kate-
+dummy
+main
+target
+Cargo.lock
